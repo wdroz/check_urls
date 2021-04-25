@@ -1,6 +1,8 @@
 use std::{future::Future, path::Path};
 use std::fs;
 use regex::Regex;
+// Or maybe use Stream?
+use futures::stream::{FuturesUnordered, StreamExt};
 
 use glob::{glob, Pattern, PatternError};
 
@@ -22,6 +24,13 @@ async fn read_urls_from_file(file: String) -> Option<Vec<String>> {
         }
         Err(_) => None,
     }    
+}
+
+fn process_files(files: Vec<String>) {
+    let mut workers = FuturesUnordered::new();
+    for file in files {
+        workers.push(read_urls_from_file(file.clone()));
+    }
 }
 
 fn get_files(glob_expr: &str) -> Result<Option<Vec<String>>, PatternError> {
