@@ -1,9 +1,12 @@
-use std::{future::Future, path::Path};
-use std::fs;
 use regex::Regex;
+use std::fs;
+use std::{future::Future, path::Path};
 // Or maybe use Stream?
-use futures::{FutureExt, stream::{FuturesUnordered, StreamExt}};
 use futures::executor::block_on;
+use futures::{
+    stream::{FuturesUnordered, StreamExt},
+    FutureExt,
+};
 use reqwest;
 
 use glob::{glob, Pattern, PatternError};
@@ -28,15 +31,15 @@ async fn read_urls_from_file(file: String) -> Option<Vec<String>> {
             Some(urls)
         }
         Err(_) => None,
-    }    
+    }
 }
 
 async fn check_url(url: String) -> bool {
     let client = reqwest::Client::new();
-    let res =client.head(url).send().await;
+    let res = client.head(url).send().await;
     match res {
         Ok(_) => true,
-        Err(_) => false
+        Err(_) => false,
     }
 }
 
@@ -47,7 +50,7 @@ async fn print_result(r: bool) {
 async fn handle_urls(maybe_urls: Option<Vec<String>>) {
     if let Some(urls) = maybe_urls {
         let mut workers = FuturesUnordered::new();
-        for url in urls{
+        for url in urls {
             workers.push(check_url(url))
         }
         workers.for_each_concurrent(20, print_result).await;
@@ -85,5 +88,4 @@ fn main() {
     if let Some(files) = maybe_files {
         block_on(process_files(files));
     }
-    
 }
