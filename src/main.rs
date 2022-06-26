@@ -23,6 +23,5 @@ async fn main() {
     // Calling `say_world()` does not execute the body of `say_world()`.
     let args = Args::parse();
     let folder = args.path;
-    let ignore_file = args.ignore_file;
-    get_files(folder, ignore_file);
+    get_files(folder);
 }
