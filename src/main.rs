@@ -1,5 +1,9 @@
 use clap::Parser;
 
+mod checkurls;
+
+use checkurls::get_files;
+
 /// Simple program to greet a person
 
 #[derive(Parser, Debug)]
@@ -20,4 +24,5 @@ async fn main() {
     let args = Args::parse();
     let folder = args.path;
     let ignore_file = args.ignore_file;
+    get_files(folder, ignore_file);
 }
