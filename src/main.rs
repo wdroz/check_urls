@@ -23,5 +23,5 @@ async fn main() {
     // Calling `say_world()` does not execute the body of `say_world()`.
     let args = Args::parse();
     let folder = args.path;
-    get_files(folder);
+    get_files(folder).await;
 }
