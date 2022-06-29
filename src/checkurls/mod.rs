@@ -20,7 +20,6 @@ pub async fn get_files(path: String) {
 async fn process_entry(entry: &DirEntry) {
     if let Some(file_type) = entry.file_type() {
         if !file_type.is_dir() {
-            println!("FILE {}", entry.path().display());
             check_urls(entry.path().as_ref()).await;
         }
     }
