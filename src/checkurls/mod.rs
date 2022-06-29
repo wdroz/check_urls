@@ -1,5 +1,8 @@
 use regex::Regex;
+use reqwest;
+use reqwest::ClientBuilder;
 use std::path::Path;
+use std::time::Duration;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 
@@ -29,9 +32,34 @@ async fn check_urls(path: &Path) {
         let mut contents = vec![];
         if let Ok(_) = file.read_to_end(&mut contents).await {
             for caps in re.captures_iter(std::str::from_utf8(&contents).unwrap()) {
-                println!("captured = {}", caps.get(0).unwrap().as_str());
+                let url = caps.get(0).unwrap().as_str();
+                // TODO remove this when centralize things
+                if url.contains("github") {
+                    continue;
+                }
+                let client = reqwest::Client::builder()
+                    .timeout(Duration::from_secs(10))
+                    .build()
+                    .unwrap();
+                let resp = client.get(url).send().await;
+                match resp {
+                    Ok(good_response) => {
+                        if !good_response.status().is_success() {
+                            println!(
+                                "❌ {} - {}\n└──{:?}",
+                                url,
+                                good_response.status().to_string(),
+                                path
+                            );
+                        } else {
+                            println!("{} - {}", url, good_response.status().to_string());
+                        }
+                    }
+                    Err(error) => {
+                        println!("❌ {} - {}\n└──{:?}", url, error.to_string(), path)
+                    }
+                }
             }
-            println!("len = {}", contents.len());
         }
     }
 }
