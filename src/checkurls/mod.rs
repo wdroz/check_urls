@@ -50,8 +50,6 @@ async fn check_urls(path: &Path) {
                                 good_response.status().to_string(),
                                 path
                             );
-                        } else {
-                            println!("{} - {}", url, good_response.status().to_string());
                         }
                     }
                     Err(error) => {
