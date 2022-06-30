@@ -1,11 +1,23 @@
 use regex::Regex;
-use reqwest;
-use std::path::Path;
+use reqwest::{self};
 use std::time::Duration;
+use std::{fmt, path::Path};
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 
 use ignore::{DirEntry, Walk};
+#[derive(Debug, Clone)]
+struct BadUrls {
+    url: String,
+    from: String,
+    info: String,
+}
+
+impl fmt::Display for BadUrls {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "❌ {} - {}\n└──{:?}", self.url, self.from, self.info,)
+    }
+}
 
 pub async fn get_files(path: String) {
     for result in Walk::new(path) {
@@ -25,6 +37,7 @@ async fn process_entry(entry: &DirEntry) {
 }
 
 async fn check_urls(path: &Path) {
+    let mut bad_urls: Vec<BadUrls> = Vec::new();
     let re = Regex::new(r"((https?)://)(www.)?[a-z0-9]+\.[a-z]+(/[a-zA-Z0-9#]+/?)*").unwrap();
     if let Ok(mut file) = File::open(path).await {
         let mut contents = vec![];
@@ -43,19 +56,27 @@ async fn check_urls(path: &Path) {
                 match resp {
                     Ok(good_response) => {
                         if !good_response.status().is_success() {
-                            println!(
-                                "❌ {} - {}\n└──{:?}",
-                                url,
-                                good_response.status().to_string(),
-                                path
-                            );
+                            let badurl = BadUrls {
+                                from: path.to_string_lossy().to_string(),
+                                url: url.to_string(),
+                                info: good_response.status().to_string(),
+                            };
+                            bad_urls.push(badurl);
                         }
                     }
                     Err(error) => {
-                        println!("❌ {} - {}\n└──{:?}", url, error.to_string(), path)
+                        let badurl = BadUrls {
+                            from: path.to_string_lossy().to_string(),
+                            url: url.to_string(),
+                            info: error.to_string(),
+                        };
+                        bad_urls.push(badurl);
                     }
                 }
             }
         }
+    }
+    for badurl in bad_urls {
+        println!("{}", badurl);
     }
 }
