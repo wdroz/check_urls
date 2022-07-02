@@ -1,7 +1,12 @@
 pub mod checkurls;
 pub mod common;
 
-use std::{fmt, time::Duration};
+use std::{
+    collections::HashSet,
+    fmt,
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use checkurls::get_files;
 use clap::Parser;
@@ -42,6 +47,7 @@ async fn main() {
     let folder = args.path;
     let (tx, rx) = flume::unbounded();
     let (tx_url, rx_url) = flume::unbounded();
+    let visited_url = Arc::new(Mutex::new(HashSet::new()));
     tokio::spawn(async move {
         loop {
             if let Ok(message) = rx.recv() {
@@ -51,7 +57,7 @@ async fn main() {
             }
         }
     });
-    get_files(folder, tx).await;
+    get_files(folder, tx, &visited_url).await;
     let _ = tokio::spawn(async move {
         loop {
             if let Ok(bad_url) = rx_url.recv() {
