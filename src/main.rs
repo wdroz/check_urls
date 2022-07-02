@@ -6,7 +6,7 @@ use std::{fmt, time::Duration};
 use checkurls::get_files;
 use clap::Parser;
 use common::Message;
-use flume::{self};
+use flume::{self, Sender};
 use reqwest::{self};
 /// Simple program to greet a person
 
@@ -41,21 +41,32 @@ async fn main() {
     let args = Args::parse();
     let folder = args.path;
     let (tx, rx) = flume::unbounded();
+    let (tx_url, rx_url) = flume::unbounded();
     tokio::spawn(async move {
         loop {
-            let message = rx.recv().unwrap();
-            check_urls(message).await;
+            if let Ok(message) = rx.recv() {
+                check_urls(message, &tx_url).await;
+            } else {
+                break;
+            }
         }
     });
     get_files(folder, tx).await;
+    let _ = tokio::spawn(async move {
+        loop {
+            if let Ok(bad_url) = rx_url.recv() {
+                println!("{bad_url}");
+            } else {
+                break;
+            }
+        }
+    })
+    .await;
 }
 
-async fn check_urls(message: Message) {
+async fn check_urls(message: Message, tx_url: &Sender<BadUrls>) {
     let url = &message.url;
     let path = message.path;
-    let mut bad_urls: Vec<BadUrls> = Vec::new();
-    //let mut bad_urls: Mutex::new(bad_urls);
-    //let bad_urls = Arc::new(bad_urls);
     if !url.contains("github") {
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(10))
@@ -70,7 +81,7 @@ async fn check_urls(message: Message) {
                         url: url.clone(),
                         info: good_response.status().to_string(),
                     };
-                    bad_urls.push(badurl);
+                    let _ = tx_url.send(badurl);
                 }
             }
             Err(error) => {
@@ -79,8 +90,7 @@ async fn check_urls(message: Message) {
                     url: url.clone(),
                     info: error.to_string(),
                 };
-
-                bad_urls.push(badurl);
+                let _ = tx_url.send(badurl);
             }
         }
     }
