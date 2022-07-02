@@ -73,31 +73,29 @@ async fn main() {
 async fn check_urls(message: Message, tx_url: &Sender<BadUrls>) {
     let url = &message.url;
     let path = message.path;
-    if !url.contains("github") {
-        let client = reqwest::Client::builder()
-            .timeout(Duration::from_secs(10))
-            .build()
-            .unwrap();
-        let resp = client.get(url).send().await;
-        match resp {
-            Ok(good_response) => {
-                if !good_response.status().is_success() {
-                    let badurl = BadUrls {
-                        from: path,
-                        url: url.clone(),
-                        info: good_response.status().to_string(),
-                    };
-                    let _ = tx_url.send(badurl);
-                }
-            }
-            Err(error) => {
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+        .unwrap();
+    let resp = client.get(url).send().await;
+    match resp {
+        Ok(good_response) => {
+            if !good_response.status().is_success() {
                 let badurl = BadUrls {
                     from: path,
                     url: url.clone(),
-                    info: error.to_string(),
+                    info: good_response.status().to_string(),
                 };
                 let _ = tx_url.send(badurl);
             }
+        }
+        Err(error) => {
+            let badurl = BadUrls {
+                from: path,
+                url: url.clone(),
+                info: error.to_string(),
+            };
+            let _ = tx_url.send(badurl);
         }
     }
 }
