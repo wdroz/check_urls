@@ -46,12 +46,8 @@ async fn main() -> Result<(), i32> {
     let visited_url = Arc::new(Mutex::new(HashSet::new()));
     let has_bad_urls = Arc::new(Mutex::new(false));
     tokio::spawn(async move {
-        loop {
-            if let Ok(message) = rx.recv() {
-                check_urls(message, &tx_url).await;
-            } else {
-                break;
-            }
+        while let Ok(message) = rx.recv() {
+            check_urls(message, &tx_url).await;
         }
     });
     get_files(folder, tx, &visited_url).await;
