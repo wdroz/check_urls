@@ -2,7 +2,15 @@
 
 Verify the validity of URLs inside your files
 
-## WIP project
+**⚠️ This is a WIP project, expect some bugs and panics ⚠️**
+
+## Install
+
+```bash
+cargo install check_urls
+```
+
+## Usage
 
 ```
 check_urls 0.1.0
