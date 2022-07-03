@@ -32,7 +32,7 @@ pub async fn get_files(
 ) {
     for result in Walk::new(path) {
         match result {
-            Ok(entry) => process_entry(&entry, &tx, &visited_url).await,
+            Ok(entry) => process_entry(&entry, &tx, visited_url).await,
             Err(err) => println!("ERROR: {}", err),
         }
     }
