@@ -45,7 +45,7 @@ async fn process_entry(
 ) {
     if let Some(file_type) = entry.file_type() {
         if !file_type.is_dir() {
-            extract_urls(entry.path(), &tx, &visited_url).await;
+            extract_urls(entry.path(), tx, visited_url).await;
         }
     }
 }
