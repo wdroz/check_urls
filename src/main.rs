@@ -48,6 +48,7 @@ async fn main() {
     let (tx, rx) = flume::unbounded();
     let (tx_url, rx_url) = flume::unbounded();
     let visited_url = Arc::new(Mutex::new(HashSet::new()));
+    let has_bad_urls = Arc::new(Mutex::new(false));
     tokio::spawn(async move {
         loop {
             if let Ok(message) = rx.recv() {
@@ -58,16 +59,26 @@ async fn main() {
         }
     });
     get_files(folder, tx, &visited_url).await;
+    let has_bad_urls_clone = has_bad_urls.clone();
     let _ = tokio::spawn(async move {
         loop {
             if let Ok(bad_url) = rx_url.recv() {
                 println!("{bad_url}");
+                {
+                    let mut has_bad_urls_value = has_bad_urls_clone.lock().unwrap();
+                    *has_bad_urls_value = true;
+                }
             } else {
                 break;
             }
         }
     })
     .await;
+    let final_has_bad_urls = has_bad_urls.lock().unwrap();
+    if *final_has_bad_urls {
+        println!("⚠️ some files contains invalid URLs ⚠️");
+    } else {
+    }
 }
 
 async fn check_urls(message: Message, tx_url: &Sender<BadUrls>) {
