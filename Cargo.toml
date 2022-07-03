@@ -3,6 +3,13 @@ name = "check_urls"
 version = "0.1.0"
 authors = ["William Droz"]
 edition = "2021"
+repository = "https://github.com/wdroz/check_urls"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://github.com/wdroz/check_urls"
+description = "Verify the validity of URLs inside your files"
+keywords = ["tools", "CI", "CICD", "CLI"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "3.2.6", features = ["derive"] }
