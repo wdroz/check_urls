@@ -23,10 +23,14 @@ struct Args {
     path: String,
 }
 
+///Represent a bad url
 #[derive(Debug, Clone)]
 struct BadUrls {
+    /// The faulty URL
     url: String,
+    /// From which file this URL is from
     from: String,
+    /// Status or error code
     info: String,
 }
 
@@ -70,6 +74,12 @@ async fn main() -> Result<(), i32> {
     }
 }
 
+/// Check that the URLs are responding (quickly enough)
+///
+/// # Arguments
+///
+/// * `message` - The message containing the url and path
+/// * `tx_url` - The channel to report fault URLs
 async fn check_urls(message: Message, tx_url: &Sender<BadUrls>) {
     let url = &message.url;
     let path = message.path;

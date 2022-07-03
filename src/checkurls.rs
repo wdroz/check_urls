@@ -12,10 +12,14 @@ use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 
 use ignore::{DirEntry, Walk};
+///Represent a bad url
 #[derive(Debug, Clone)]
 struct BadUrls {
+    /// The faulty URL
     url: String,
+    /// From which file this URL is from
     from: String,
+    /// Status or error code
     info: String,
 }
 
@@ -25,6 +29,13 @@ impl fmt::Display for BadUrls {
     }
 }
 
+/// Walk on add files, then try to extract URLs
+///
+/// # Arguments
+///
+/// * `path` - The path to walk
+/// * `tx` - The channel to report extracted URLs
+/// * `visited_url` - hashset of visited URLs, to avoid spamming already visited URLs
 pub async fn get_files(
     path: String,
     tx: Sender<Message>,
@@ -38,6 +49,13 @@ pub async fn get_files(
     }
 }
 
+/// Check if the `entry` is a file. If it's the case, try to extract URLs
+///
+/// # Arguments
+///
+/// * `entry` - folder or file.
+/// * `tx` - The channel to report extracted URLs
+/// * `visited_url` - hashset of visited URLs, to avoid spamming already visited URLs
 async fn process_entry(
     entry: &DirEntry,
     tx: &Sender<Message>,
@@ -50,6 +68,13 @@ async fn process_entry(
     }
 }
 
+/// Extract URLs for the file
+///
+/// # Arguments
+///
+/// * `path` - Path of the file
+/// * `tx` - The channel to report extracted URLs
+/// * `visited_url` - hashset of visited URLs, to avoid spamming already visited URLs
 async fn extract_urls(
     path: &Path,
     tx: &Sender<Message>,
