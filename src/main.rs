@@ -13,8 +13,8 @@ use clap::Parser;
 use common::Message;
 use flume::{self, Sender};
 use reqwest::{self};
-/// Simple program to greet a person
 
+/// Verify the validity of URLs inside your files
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
