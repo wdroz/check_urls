@@ -7,13 +7,13 @@ Verify the validity of URLs inside your files
 ```
 check_urls 0.1.0
 William Droz
-Simple program to greet a person
+Verify the validity of URLs inside your files
 
 USAGE:
     check_urls [OPTIONS]
 
 OPTIONS:
-    -h, --help                         Print help information
-    -p, --path <PATH>                  Path of codebase to check [default: .]
-    -V, --version                      Print version information
+    -h, --help           Print help information
+    -p, --path <PATH>    Path of codebase to check [default: .]
+    -V, --version        Print version information
 ```
