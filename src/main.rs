@@ -53,15 +53,11 @@ async fn main() -> Result<(), i32> {
     get_files(folder, tx, &visited_url).await;
     let has_bad_urls_clone = has_bad_urls.clone();
     let _ = tokio::spawn(async move {
-        loop {
-            if let Ok(bad_url) = rx_url.recv() {
-                println!("{bad_url}");
-                {
-                    let mut has_bad_urls_value = has_bad_urls_clone.lock().unwrap();
-                    *has_bad_urls_value = true;
-                }
-            } else {
-                break;
+        while let Ok(bad_url) = rx_url.recv() {
+            println!("{bad_url}");
+            {
+                let mut has_bad_urls_value = has_bad_urls_clone.lock().unwrap();
+                *has_bad_urls_value = true;
             }
         }
     })
