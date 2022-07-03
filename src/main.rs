@@ -37,7 +37,7 @@ impl fmt::Display for BadUrls {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), i32> {
     // Calling `say_world()` does not execute the body of `say_world()`.
     let args = Args::parse();
     let folder = args.path;
@@ -73,7 +73,9 @@ async fn main() {
     let final_has_bad_urls = has_bad_urls.lock().unwrap();
     if *final_has_bad_urls {
         println!("⚠️ some files contains invalid URLs ⚠️");
+        Err(1)
     } else {
+        Ok(())
     }
 }
 
