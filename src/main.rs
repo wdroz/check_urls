@@ -38,7 +38,6 @@ impl fmt::Display for BadUrls {
 
 #[tokio::main]
 async fn main() -> Result<(), i32> {
-    // Calling `say_world()` does not execute the body of `say_world()`.
     let args = Args::parse();
     let folder = args.path;
     let (tx, rx) = flume::unbounded();
