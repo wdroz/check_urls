@@ -14,13 +14,13 @@ use tokio::io::AsyncReadExt;
 use ignore::{DirEntry, Walk};
 ///Represent a bad url
 #[derive(Debug, Clone)]
-struct BadUrls {
+pub struct BadUrls {
     /// The faulty URL
-    url: String,
+    pub url: String,
     /// From which file this URL is from
-    from: String,
+    pub from: String,
     /// Status or error code
-    info: String,
+    pub info: String,
 }
 
 impl fmt::Display for BadUrls {
