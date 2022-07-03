@@ -21,10 +21,6 @@ struct Args {
     /// Path of codebase to check
     #[clap(short, long, default_value = ".")]
     path: String,
-
-    /// File that contains patterns     to ignore
-    #[clap(short, long, default_value = ".gitignore")]
-    ignore_file: String,
 }
 
 #[derive(Debug, Clone)]
