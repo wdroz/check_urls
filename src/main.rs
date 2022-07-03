@@ -3,12 +3,11 @@ pub mod common;
 
 use std::{
     collections::HashSet,
-    fmt,
     sync::{Arc, Mutex},
     time::Duration,
 };
 
-use checkurls::get_files;
+use checkurls::{get_files, BadUrls};
 use clap::Parser;
 use common::Message;
 use flume::{self, Sender};
@@ -21,23 +20,6 @@ struct Args {
     /// Path of codebase to check
     #[clap(short, long, default_value = ".")]
     path: String,
-}
-
-///Represent a bad url
-#[derive(Debug, Clone)]
-struct BadUrls {
-    /// The faulty URL
-    url: String,
-    /// From which file this URL is from
-    from: String,
-    /// Status or error code
-    info: String,
-}
-
-impl fmt::Display for BadUrls {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "❌ {} - {}\n└──{:?}", self.url, self.from, self.info,)
-    }
 }
 
 #[tokio::main]
