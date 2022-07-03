@@ -84,16 +84,18 @@ async fn extract_urls(
     if let Ok(mut file) = File::open(path).await {
         let mut contents = vec![];
         if file.read_to_end(&mut contents).await.is_ok() {
-            for caps in re.captures_iter(std::str::from_utf8(&contents).unwrap()) {
-                let url = caps.get(0).unwrap().as_str();
-                {
-                    let visited_url_lock = &mut *visited_url.lock().unwrap();
-                    if !visited_url_lock.contains(url) {
-                        visited_url_lock.insert(url.to_string());
-                        _ = tx.send(Message {
-                            path: path.to_string_lossy().to_string(),
-                            url: url.to_string(),
-                        });
+            if let Ok(utf8_content) = std::str::from_utf8(&contents) {
+                for caps in re.captures_iter(utf8_content) {
+                    let url = caps.get(0).unwrap().as_str();
+                    {
+                        let visited_url_lock = &mut *visited_url.lock().unwrap();
+                        if !visited_url_lock.contains(url) {
+                            visited_url_lock.insert(url.to_string());
+                            _ = tx.send(Message {
+                                path: path.to_string_lossy().to_string(),
+                                url: url.to_string(),
+                            });
+                        }
                     }
                 }
             }
