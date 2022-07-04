@@ -32,7 +32,8 @@ async fn main() -> Result<(), i32> {
     let has_bad_urls = Arc::new(Mutex::new(false));
     tokio::spawn(async move {
         while let Ok(message) = rx.recv() {
-            check_urls(message, &tx_url).await;
+            check_urls(message, tx_url.clone()).await;
+            //check_urls(message, &tx_url).await;
         }
     });
     get_files(folder, tx, &visited_url).await;
@@ -62,7 +63,7 @@ async fn main() -> Result<(), i32> {
 ///
 /// * `message` - The message containing the url and path
 /// * `tx_url` - The channel to report fault URLs
-async fn check_urls(message: Message, tx_url: &Sender<BadUrls>) {
+async fn check_urls(message: Message, tx_url: Sender<BadUrls>) {
     let url = &message.url;
     let path = message.path;
     let client = reqwest::Client::builder()
