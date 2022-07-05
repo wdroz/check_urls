@@ -22,6 +22,13 @@ struct Args {
     path: String,
 }
 
+/// get the number of dead links inside a folder or file
+///
+/// # Arguments
+///
+/// * `folder` - The folder or file to check
+///
+/// Returns the number of dead links
 async fn get_number_of_dead_links(folder: &str) -> i32 {
     let (tx, rx) = flume::unbounded();
     let (tx_url, rx_url) = flume::unbounded();
