@@ -100,3 +100,25 @@ async fn check_urls(message: Message, tx_url: Sender<BadUrls>) {
         }
     }
 }
+
+// tests
+
+#[cfg(test)]
+mod check_urls {
+
+    use super::*;
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
+    async fn test_find_3_bad_urls() {
+        let my_file = "tests/test_urls.md";
+        let res = get_number_of_dead_links(my_file).await;
+        assert!(res == 3);
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
+    async fn test_find_0_bad_urls() {
+        let my_file = "tests/only_good.md";
+        let res = get_number_of_dead_links(my_file).await;
+        assert!(res == 0);
+    }
+}
