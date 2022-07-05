@@ -22,14 +22,11 @@ struct Args {
     path: String,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), i32> {
-    let args = Args::parse();
-    let folder = args.path;
+async fn get_number_of_dead_links(folder: &str) -> i32 {
     let (tx, rx) = flume::unbounded();
     let (tx_url, rx_url) = flume::unbounded();
     let visited_url = Arc::new(Mutex::new(HashSet::new()));
-    let has_bad_urls = Arc::new(Mutex::new(false));
+    let nb_bad_urls = Arc::new(Mutex::new(0));
     tokio::spawn(async move {
         while let Ok(message) = rx.recv() {
             let clone_a = tx_url.clone();
@@ -38,20 +35,29 @@ async fn main() -> Result<(), i32> {
             });
         }
     });
-    get_files(folder, tx, &visited_url).await;
-    let has_bad_urls_clone = has_bad_urls.clone();
+    get_files(folder.to_string(), tx, &visited_url).await;
+    let nb_bad_urls = Arc::clone(&nb_bad_urls);
+    let clone = Arc::clone(&nb_bad_urls);
     let _ = tokio::spawn(async move {
         while let Ok(bad_url) = rx_url.recv() {
             println!("{bad_url}");
             {
-                let mut has_bad_urls_value = has_bad_urls_clone.lock().unwrap();
-                *has_bad_urls_value = true;
+                let mut num = clone.lock().unwrap();
+                *num += 1;
             }
         }
     })
     .await;
-    let final_has_bad_urls = has_bad_urls.lock().unwrap();
-    if *final_has_bad_urls {
+    // let final_nb_bad_urls = nb_bad_urls.lock().unwrap();
+    let final_nb_bad_urls = nb_bad_urls.lock().unwrap();
+    *final_nb_bad_urls
+}
+
+#[tokio::main]
+async fn main() -> Result<(), i32> {
+    let args = Args::parse();
+    let folder = args.path;
+    if get_number_of_dead_links(&folder).await > 0 {
         println!("⚠️ some files contains invalid URLs ⚠️");
         Err(1)
     } else {
