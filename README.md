@@ -2,6 +2,8 @@
 
 Verify the validity of URLs inside your files
 
+![demo](https://github.com/wdroz/check_urls/raw/master/media/demo.gif)
+
 **⚠️ This is a WIP project, expect some bugs and panics ⚠️**
 
 ## Install
