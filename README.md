@@ -13,7 +13,7 @@ cargo install check_urls
 ## Usage
 
 ```
-check_urls 0.2.0
+check_urls 0.2.1
 William Droz
 Verify the validity of URLs inside your files
 
