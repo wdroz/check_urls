@@ -10,6 +10,7 @@ homepage = "https://github.com/wdroz/check_urls"
 description = "Verify the validity of URLs inside your files"
 keywords = ["tools", "CI", "CICD", "CLI"]
 categories = ["command-line-utilities"]
+exclude = ["/media"]
 
 [dependencies]
 clap = { version = "3.2.6", features = ["derive"] }
