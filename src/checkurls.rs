@@ -80,7 +80,7 @@ async fn extract_urls(
     tx: &Sender<Message>,
     visited_url: &Arc<Mutex<HashSet<String>>>,
 ) {
-    let re = Regex::new(r"((https?)://)(www.)?[a-z0-9]+\.[a-z]+(/[a-zA-Z0-9#]+/?)*").unwrap();
+    let re = Regex::new(r"https?://(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&/=]*)").unwrap();
     if let Ok(mut file) = File::open(path).await {
         let mut contents = vec![];
         if file.read_to_end(&mut contents).await.is_ok() {
