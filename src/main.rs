@@ -60,7 +60,7 @@ async fn get_number_of_dead_links(folder: &str) -> i32 {
     *final_nb_bad_urls
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread", worker_threads = 50)]
 async fn main() -> Result<(), i32> {
     let args = Args::parse();
     let folder = args.path;
