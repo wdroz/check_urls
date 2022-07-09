@@ -88,7 +88,10 @@ async fn check_urls(message: Message, tx_url: Sender<BadUrls>) {
     let resp = client.get(url).send().await;
     match resp {
         Ok(good_response) => {
-            if !good_response.status().is_success() {
+            let accepted_code = vec!["401", "403"];
+            if !good_response.status().is_success()
+                && !accepted_code.contains(&good_response.status().as_str())
+            {
                 let badurl = BadUrls {
                     from: path,
                     url: url.clone(),
