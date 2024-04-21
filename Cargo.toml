@@ -13,10 +13,10 @@ categories = ["command-line-utilities"]
 exclude = ["/media"]
 
 [dependencies]
-clap = { version = "3.2.6", features = ["derive"] }
+clap = { version = "~4", features = ["derive"] }
 glob= "0.3.0"
-regex = "1.5.6"
-tokio = { version = "1", features = ["full"] }
-ignore = "0.4"
+regex = "~1"
+tokio = { version = "~1", features = ["full"] }
+ignore = "^0.4"
 reqwest = { version = "0.11", features = ["json"] }
-flume = "0.10.13"
+flume = "^0.11"
