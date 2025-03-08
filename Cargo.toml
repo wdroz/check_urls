@@ -2,7 +2,7 @@
 name = "check_urls"
 version = "0.2.4"
 authors = ["William Droz"]
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/wdroz/check_urls"
 license = "GPL-3.0-or-later"
 readme = "README.md"
