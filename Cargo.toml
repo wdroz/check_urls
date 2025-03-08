@@ -1,6 +1,6 @@
 [package]
 name = "check_urls"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["William Droz"]
 edition = "2024"
 repository = "https://github.com/wdroz/check_urls"
